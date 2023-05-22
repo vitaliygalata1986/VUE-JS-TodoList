@@ -1,0 +1,22 @@
+{
+  "name": "vitaliy_galata",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "cardinal": "^2.1.1",
+    "core-js": "^3.6.5",
+    "pg-hstore": "^2.3.4",
+    "uuidv4": "^6.2.13",
+    "vue": "^2.6.11",
+    "vue-router": "^3.4.9"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "vue-template-compiler": "^2.6.11"
+  }
+}
