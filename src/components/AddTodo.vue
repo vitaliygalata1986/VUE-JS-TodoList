@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import { v4 as uuidv4 } from 'uuid';
   export default {
     data(){
       return{
@@ -14,10 +15,10 @@
     },
     methods:{
       onSubmit(){
-        console.log('Submit', this.title);
         if(this.title.trim()){
           const newTodo = {
-            id: Date.now(),
+            // id: Date.now(),
+            id: uuidv4(),
             title: this.title,
             completed: false
           }

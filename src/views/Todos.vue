@@ -25,8 +25,7 @@
 </template>
 
 <script>
-import { uuid } from 'uuidv4';
-import Todolist from '@/components/TodoList'    // значек @ всегда указывает на папку src
+import Todolist from '@/components/TodoList'
 import AddTodo from '@/components/AddTodo'
 import Loader from '@/components/Loader'
 
@@ -34,11 +33,7 @@ export default {
   name: 'App',
   data() {
     return {
-      todos: [
-        // {id:1, title:'Купить хлеб', completed: false},
-        // {id:2, title:'Купить масло', completed: false},
-        // {id:3, title:'Купить кефир', completed: false},
-      ],
+      todos: [],
       loading: true,
       filter: 'all'
     }
@@ -86,22 +81,21 @@ export default {
           .then((response) => response.json())
           .then((todoItem) => todo.completed = todoItem.completed);
     },
-    addTodo(todo) { // здесь мы принимаем todo
+    addTodo(todo) {
       fetch('https://jsonplaceholder.typicode.com/todos', {
         method: 'POST',
         body: JSON.stringify({
           title: todo.title,
           // userId: Date.now(),
-          userId: uuid(),
+          userId: todo.id,
           completed: false
         }),
         headers: {
           'Content-type': 'application/json; charset=UTF-8',
         },
       })
-          .then((response) => response.json())
-          .then((todo) => this.todos.push(todo));
-      //  this.todos.push(todo) // обращаемся к массиву todos и с помощью метода push будем добавлять этот элемент в конец массива
+      .then((response) => response.json())
+      .then((todo) => this.todos.push(todo));
     },
   },
   /*
@@ -122,7 +116,6 @@ export default {
       if (this.filter === 'not-completed') {
         return this.todos.filter(t => !t.completed)
       }
-
     }
   }
 }
