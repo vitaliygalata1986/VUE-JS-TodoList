@@ -4,6 +4,8 @@ import router from './router'
 
 Vue.config.productionTip = false
 
+export const eventEmmiter = new Vue()
+
 new Vue({
   router,
   render: h => h(App),

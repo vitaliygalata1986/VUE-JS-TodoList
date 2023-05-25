@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import { v4 as uuidv4 } from 'uuid';
   export default {
     data(){
       return{
@@ -18,7 +17,6 @@ import { v4 as uuidv4 } from 'uuid';
         if(this.title.trim()){
           const newTodo = {
             // id: Date.now(),
-            id: uuidv4(),
             title: this.title,
             completed: false
           }

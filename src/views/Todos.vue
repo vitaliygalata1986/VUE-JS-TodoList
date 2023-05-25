@@ -16,8 +16,6 @@
     <Todolist
         v-else-if="filteredTodos.length"
         v-bind:todos="filteredTodos"
-        v-on:remove-todo="removeTodo"
-        v-on:change-todo="changeTodo"
     >
     </Todolist>
     <p v-else>No todos!</p>
@@ -25,9 +23,13 @@
 </template>
 
 <script>
+import {eventEmmiter} from "@/main"
 import Todolist from '@/components/TodoList'
 import AddTodo from '@/components/AddTodo'
 import Loader from '@/components/Loader'
+
+const toJSON = responce => responce.json()
+const handleError = error => console.log(error)
 
 export default {
   name: 'App',
@@ -39,18 +41,45 @@ export default {
     }
   },
   mounted() {
-    const toJSON = responce => responce.json()
-    const handleError = error => console.log(error)
+
     const onFetchSuccess = json => {
       setTimeout(() => {
         this.todos = json
         this.loading = false
       }, 1000)
     }
+
     fetch('https://jsonplaceholder.typicode.com/todos?_limit=3')
         .then(toJSON)
         .then(onFetchSuccess)
         .catch(handleError)
+
+    eventEmmiter.$on("removeTodo", id => {
+      fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+        method: 'DELETE',
+      })
+          .then(toJSON)
+          .then(() => this.todos = this.todos.filter(t => t.id !== id))
+          .catch(handleError)
+    })
+
+    eventEmmiter.$on("changeTodo", todo => {
+      fetch('https://jsonplaceholder.typicode.com/todos/1', {
+        method: 'PUT',
+        body: JSON.stringify({
+          title: todo.title,
+          id: todo.id,
+          completed: !todo.completed,
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      })
+          .then(toJSON)
+          .then((todoItem) => todo.completed = todoItem.completed)
+          .catch(handleError)
+    })
+
   },
   components: {
     Todolist,
@@ -58,53 +87,26 @@ export default {
     Loader
   },
   methods: {
-    removeTodo(id) {
-      fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
-        method: 'DELETE',
-      })
-          .then((response) => response.json())
-          .then((test) => this.todos = this.todos.filter(t => t.id !== id))
-    },
-    changeTodo(todo) {
-      fetch('https://jsonplaceholder.typicode.com/todos/1', {
-        method: 'PUT',
-        body: JSON.stringify({
-          title: todo.title,
-          id: todo.id,
-          userId: todo.id,
-          completed: !todo.completed,
-        }),
-        headers: {
-          'Content-type': 'application/json; charset=UTF-8',
-        },
-      })
-          .then((response) => response.json())
-          .then((todoItem) => todo.completed = todoItem.completed);
-    },
     addTodo(todo) {
       fetch('https://jsonplaceholder.typicode.com/todos', {
         method: 'POST',
         body: JSON.stringify({
           title: todo.title,
-          // userId: Date.now(),
-          userId: todo.id,
+          userId: 1,
           completed: false
         }),
         headers: {
           'Content-type': 'application/json; charset=UTF-8',
         },
       })
-      .then((response) => response.json())
-      .then((todo) => this.todos.push(todo));
+          .then(toJSON)
+          .then((todo) => {
+            const newTodo = {...todo, id:Date.now()}
+            this.todos.push(newTodo)
+          })
+          .catch(handleError)
     },
   },
-  /*
-  watch:{
-      filter(value){ // создаем функцию, которая должна совпадать с той моделью, за которой следим (v-model="filter")
-        console.log(value)
-      }
-  }
-  */
   computed: {
     filteredTodos() {
       if (this.filter === 'all') {
